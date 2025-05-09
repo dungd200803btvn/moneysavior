@@ -6,11 +6,14 @@ import org.springframework.stereotype.Repository;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.CategorySummaryResult;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+    Transaction findFirstByUserUuidOrderByTimestampDesc(String userUuid);
+
     @Query("""
             SELECT t.category.name AS categoryName,
                    SUM(t.amount) AS totalAmount,
@@ -22,5 +25,10 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             """)
     List<CategorySummaryResult> findCategorySummaryByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
 
-    Transaction findFirstByUserUuidOrderByTimestampDesc(String userUuid);
+    @Query("""
+            SELECT SUM(t.amount)
+            FROM Transaction t
+            WHERE t.userUuid = ?1 AND t.type = 'INCOME' AND CAST(t.timestamp AS DATE) BETWEEN ?2 AND ?3
+            """)
+    BigDecimal findTotalIncomeByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
 }
