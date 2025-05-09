@@ -2,8 +2,8 @@ package soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot;
 
 import java.util.List;
 
-public class RecordTransactionPrompt extends Prompt {
-    public RecordTransactionPrompt(String message, List<String> categories) {
+public class CategorizeTransactionPrompt extends Prompt {
+    public CategorizeTransactionPrompt(String message, List<String> categories) {
         super("""
                 Hãy phân tích message ghi nội dung thu/chi sau: '%s' xem là thu nhập hay chi tiêu và trả về duy nhất không gì ngoài 1 đối tượng json gồm các trường:
                 type: string ('INCOME' nếu là thu nhập, 'EXPENSE' nếu là chi tiêu hoặc 'UNDEFINED' nếu không liên quan hoặc không phân loại được)
