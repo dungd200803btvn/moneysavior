@@ -3,17 +3,18 @@ package soict.hedspi.itss2.gyatto.moneysavior.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CategorizeTransactionPrompt;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.GetCommentOnNewestTransactionResponse;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionAutoRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionResponse;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ExpenseCategory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 import soict.hedspi.itss2.gyatto.moneysavior.repository.ExpenseCategoryRepository;
 import soict.hedspi.itss2.gyatto.moneysavior.repository.TransactionRepository;
 import soict.hedspi.itss2.gyatto.moneysavior.service.ChatbotService;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -84,5 +85,14 @@ public class TransactionServiceImpl implements TransactionService {
         return GetCommentOnNewestTransactionResponse.builder()
                 .comment("Ghi nhận thành công giao dịch của bạn")
                 .build();
+    }
+
+    @Override
+    public List<CategorySummaryResult> getCategorySummary(GetCategorySummaryRequest request) {
+        return transactionRepository.findCategorySummaryByUserUuid(
+                request.getUserUuid(),
+                request.getStartDate(),
+                request.getEndDate()
+        );
     }
 }

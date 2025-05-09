@@ -4,11 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.GetCommentOnNewestTransactionResponse;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionAutoRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionResponse;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -29,5 +28,19 @@ public class TransactionController {
     @GetMapping("/transactions:comment")
     public ResponseEntity<GetCommentOnNewestTransactionResponse> getCommentOnNewestTransaction(@RequestParam String userUuid) {
         return ResponseEntity.ok(transactionService.getCommentOnNewestTransaction(userUuid));
+    }
+
+    @GetMapping("/transactions/reports/category-summary")
+    public ResponseEntity<?> getCategorySummary(
+            @RequestParam String userUuid,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        var request = GetCategorySummaryRequest.builder()
+                .userUuid(userUuid)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+        return ResponseEntity.ok(transactionService.getCategorySummary(request));
     }
 }
