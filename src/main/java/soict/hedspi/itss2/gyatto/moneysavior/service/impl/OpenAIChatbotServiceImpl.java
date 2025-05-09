@@ -21,11 +21,11 @@ public class OpenAIChatbotServiceImpl implements ChatbotService {
     private final OpenAIRequestFactory openAIRequestFactory;
     private final ObjectMapper objectMapper;
 
-    @PostConstruct
-    public void test() {
-        var result = recordTransaction(new RecordTransactionPrompt("ăn bún đậu mắm tôm 30k", List.of("Nhà ở", "Đi lại", "Ăn uống", "Mua sắm", "Giải trí", "Giáo dục", "Sức khỏe", "Khác")));
-        log.info("Test result: {}", result);
-    }
+//    @PostConstruct
+//    public void test() {
+//        var result = recordTransaction(new RecordTransactionPrompt("ăn bún đậu mắm tôm 30k", List.of("Nhà ở", "Đi lại", "Ăn uống", "Mua sắm", "Giải trí", "Giáo dục", "Sức khỏe", "Khác")));
+//        log.info("Test result: {}", result);
+//    }
 
     @Override
     public RecordTransactionResult recordTransaction(RecordTransactionPrompt prompt) {

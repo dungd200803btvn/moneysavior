@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class ExpenseCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private Long id;
 
     private String name;
 }
