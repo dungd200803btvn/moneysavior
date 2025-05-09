@@ -32,6 +32,7 @@ public class OpenAIChatbotServiceImpl implements ChatbotService {
         var request = openAIRequestFactory.createRequest(prompt.toString());
         var response = openAIFeignClient.getResponse(request);
         var text = response.getOutput().get(0).getContent().get(0).getText();
+        text = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
         log.info("Response from OpenAI: {}", text);
         try {
             return objectMapper.readValue(text, RecordTransactionResult.class);

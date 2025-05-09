@@ -9,5 +9,6 @@ import java.math.BigDecimal;
 public class RecordTransactionResult {
     private TransactionType type;
     private String category;
+    private String description;
     private BigDecimal amount;
 }
