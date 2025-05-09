@@ -27,6 +27,7 @@ public class Transaction {
 
     private String userUuid;
 
+    @Enumerated(EnumType.STRING)
     private TransactionType type;
 
     private String description;
