@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CategorizeTransactionPrompt;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CommentOnExpensePrompt;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ExpenseCategory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
@@ -80,10 +81,25 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public GetCommentOnNewestTransactionResponse getCommentOnNewestTransaction(String userUuid) {
-        // TODO: Implement this method
+        var latestTransaction = transactionRepository.findFirstByUserUuidOrderByTimestampDesc(userUuid);
+
+        String comment = null;
+        if (TransactionType.EXPENSE.equals(latestTransaction.getType())) {
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1);
+            LocalDate endDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
+            var categorySummaryResults = transactionRepository.findCategorySummaryByUserUuid(
+                    userUuid,
+                    startDate,
+                    endDate
+            );
+            var prompt = new CommentOnExpensePrompt(latestTransaction, categorySummaryResults);
+            comment = chatbotService.getResponse(prompt);
+        } else {
+            comment = "Chúc mừng bạn đã ghi nhận thành công giao dịch thu nhập của bạn";
+        }
 
         return GetCommentOnNewestTransactionResponse.builder()
-                .comment("Ghi nhận thành công giao dịch của bạn")
+                .comment(comment)
                 .build();
     }
 
