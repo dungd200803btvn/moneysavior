@@ -1,5 +1,6 @@
 package soict.hedspi.itss2.gyatto.moneysavior.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,22 +11,22 @@ import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRe
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
 
 @RestController
-@RequestMapping("/api/v1/transactions")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 public class TransactionController {
     private final TransactionService transactionService;
 
-    @PostMapping("")
-    public ResponseEntity<RecordTransactionResponse> recordTransaction(@RequestBody RecordTransactionRequest request) {
+    @PostMapping("/transactions")
+    public ResponseEntity<RecordTransactionResponse> recordTransaction(@RequestBody @Valid RecordTransactionRequest request) {
         return ResponseEntity.ok(transactionService.recordTransaction(request));
     }
 
-    @PostMapping(":auto")
-    public ResponseEntity<RecordTransactionResponse> recordTransactionAuto(@RequestBody RecordTransactionAutoRequest request) {
+    @PostMapping("/transactions:auto")
+    public ResponseEntity<RecordTransactionResponse> recordTransactionAuto(@RequestBody @Valid RecordTransactionAutoRequest request) {
         return ResponseEntity.ok(transactionService.recordTransactionAuto(request));
     }
 
-    @GetMapping(":comment")
+    @GetMapping("/transactions:comment")
     public ResponseEntity<GetCommentOnNewestTransactionResponse> getCommentOnNewestTransaction(@RequestParam String userUuid) {
         return ResponseEntity.ok(transactionService.getCommentOnNewestTransaction(userUuid));
     }
