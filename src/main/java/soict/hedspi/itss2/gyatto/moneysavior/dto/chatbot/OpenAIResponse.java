@@ -21,4 +21,14 @@ public class OpenAIResponse {
         private String type;
         private String text;
     }
+
+    public String getText() {
+        if (output != null && !output.isEmpty()) {
+            List<Content> contents = output.get(0).getContent();
+            if (contents != null && !contents.isEmpty()) {
+                return contents.get(0).getText();
+            }
+        }
+        return null;
+    }
 }

@@ -9,16 +9,13 @@ public class OpenAIRequestFactory {
     @Value("${openai.api.model}")
     private String defaultModel;
 
+    public OpenAIRequest createRequest(Prompt prompt) {
+        return createRequest(prompt.toString());
+    }
+
     public OpenAIRequest createRequest(String input) {
         return OpenAIRequest.builder()
                 .model(defaultModel)
-                .input(input)
-                .build();
-    }
-
-    public OpenAIRequest createRequest(String model, String input) {
-        return OpenAIRequest.builder()
-                .model(model)
                 .input(input)
                 .build();
     }

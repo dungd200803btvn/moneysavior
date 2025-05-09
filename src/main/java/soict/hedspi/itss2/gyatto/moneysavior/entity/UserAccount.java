@@ -6,16 +6,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Entity
-@Table(name = "expense_category")
+@Table(name = "user_account")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ExpenseCategory {
+public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String name;
+    @Builder.Default
+    private String uuid = UUID.randomUUID().toString();
+
+    private String email;
+
+    private String fullName;
+
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
