@@ -126,6 +126,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public GetCommentOnNewestTransactionResponse getCommentOnNewestTransaction(String userUuid) {
         var latestTransaction = transactionRepository.findFirstByUserUuidOrderByTimestampDesc(userUuid);
+        if (latestTransaction == null) {
+            return GetCommentOnNewestTransactionResponse.builder()
+                    .comment("Bạn chưa có giao dịch nào!")
+                    .build();
+        }
 
         var currentDate = LocalDate.now();
         var year = currentDate.getYear();
