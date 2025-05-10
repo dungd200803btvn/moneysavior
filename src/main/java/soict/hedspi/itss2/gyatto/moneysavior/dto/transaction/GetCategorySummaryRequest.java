@@ -13,6 +13,6 @@ import java.time.LocalDate;
 @Builder
 public class GetCategorySummaryRequest {
     private String userUuid;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private int year;
+    private int month;
 }

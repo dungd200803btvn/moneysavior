@@ -1,5 +1,6 @@
 package soict.hedspi.itss2.gyatto.moneysavior.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ public class UserAccountController {
     private final UserAccountService userAccountService;
 
     @PostMapping("/accounts:fake-login")
+    @Operation(summary = "Giả lập login ảo, nhập email là lấy được userUuid để dùng mấy api khác")
     public ResponseEntity<FakeLoginResponse> fakeLogin(@RequestBody @Valid FakeLoginRequest request) {
         return ResponseEntity.ok(userAccountService.fakeLogin(request));
     }
