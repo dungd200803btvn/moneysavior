@@ -9,6 +9,7 @@ import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -43,18 +44,17 @@ public class TransactionController {
     @GetMapping("/transactions/reports/category-summary")
     @Operation(
             summary = "Thống kê chi tiêu theo từng danh mục",
-            description = "startDate và endDate định dạng yyyy-MM-dd (ví dụ 2025-05-10). \n" +
-                    "Trả về list các đối tượng gồm categoryName (tên danh mục), totalAmount (tổng chi của danh mục đó) và percentage (phần trăm của danh mục đó so với tổng chi)."
+            description = "Trả về list thông số mỗi danh mục gồm categoryName (tên danh mục), totalAmount (tổng chi của danh mục đó) và percentage (phần trăm của danh mục đó so với tổng chi)."
     )
-    public ResponseEntity<?> getCategorySummary(
+    public ResponseEntity<List<CategorySummaryResult>> getCategorySummary(
             @RequestParam String userUuid,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
+            @RequestParam int year,
+            @RequestParam int month
     ) {
         var request = GetCategorySummaryRequest.builder()
                 .userUuid(userUuid)
-                .startDate(startDate)
-                .endDate(endDate)
+                .year(year)
+                .month(month)
                 .build();
         return ResponseEntity.ok(transactionService.getCategorySummary(request));
     }

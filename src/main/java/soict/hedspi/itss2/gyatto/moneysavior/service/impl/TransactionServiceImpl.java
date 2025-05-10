@@ -127,14 +127,11 @@ public class TransactionServiceImpl implements TransactionService {
     public GetCommentOnNewestTransactionResponse getCommentOnNewestTransaction(String userUuid) {
         var latestTransaction = transactionRepository.findFirstByUserUuidOrderByTimestampDesc(userUuid);
 
-        LocalDate startDate = LocalDate.now().withDayOfMonth(1);
-        LocalDate endDate = LocalDate.now().withDayOfMonth(LocalDate.now().lengthOfMonth());
-        var totalIncome = transactionRepository.findTotalIncomeByUserUuid(userUuid, startDate, endDate);
-        var categorySummaryResults = transactionRepository.findCategorySummaryByUserUuid(
-                userUuid,
-                startDate,
-                endDate
-        );
+        var currentDate = LocalDate.now();
+        var year = currentDate.getYear();
+        var month = currentDate.getMonthValue();
+        var totalIncome = transactionRepository.findTotalIncomeByUserUuid(userUuid, year, month);
+        var categorySummaryResults = transactionRepository.findCategorySummaryByUserUuid(userUuid, year, month);
         var prompt = new CommentOnTransactionPrompt(latestTransaction, totalIncome, categorySummaryResults);
         var comment = chatbotService.getResponse(prompt);
 
@@ -147,8 +144,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<CategorySummaryResult> getCategorySummary(GetCategorySummaryRequest request) {
         return transactionRepository.findCategorySummaryByUserUuid(
                 request.getUserUuid(),
-                request.getStartDate(),
-                request.getEndDate()
+                request.getYear(),
+                request.getMonth()
         );
     }
 }
