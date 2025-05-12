@@ -5,11 +5,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.GetCommentOnNewestTransactionResponse;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionAutoRequest;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRequest;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionResponse;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -39,23 +39,5 @@ public class TransactionController {
     @Operation(summary = "Đưa ra nhận xét cho giao dịch gần nhất (đã tích hợp trong api ghi giao dịch tự động)")
     public ResponseEntity<GetCommentOnNewestTransactionResponse> getCommentOnNewestTransaction(@RequestParam String userUuid) {
         return ResponseEntity.ok(transactionService.getCommentOnNewestTransaction(userUuid));
-    }
-
-    @GetMapping("/transactions/reports/category-summary")
-    @Operation(
-            summary = "Thống kê chi tiêu theo từng danh mục",
-            description = "startDate và endDate định dạng yyyy-MM-dd (ví dụ: 2025-05-01). Trả về list thông số mỗi danh mục gồm categoryName (tên danh mục), totalAmount (tổng chi của danh mục đó) và percentage (phần trăm của danh mục đó so với tổng chi)."
-    )
-    public ResponseEntity<List<CategorySummaryResult>> getCategorySummary(
-            @RequestParam String userUuid,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate
-    ) {
-        var request = GetCategorySummaryRequest.builder()
-                .userUuid(userUuid)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
-        return ResponseEntity.ok(transactionService.getCategorySummary(request));
     }
 }

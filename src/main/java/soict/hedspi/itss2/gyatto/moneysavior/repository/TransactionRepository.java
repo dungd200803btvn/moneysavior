@@ -3,7 +3,7 @@ package soict.hedspi.itss2.gyatto.moneysavior.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.CategorySummaryResult;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.report.CategorySummaryResult;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 
 import java.math.BigDecimal;

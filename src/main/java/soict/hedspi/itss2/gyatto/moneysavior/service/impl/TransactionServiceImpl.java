@@ -6,7 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CategorizeTransactionPrompt;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CommentOnTransactionPrompt;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.GetCommentOnNewestTransactionResponse;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionAutoRequest;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRequest;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionResponse;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ChatHistory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ExpenseCategory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
@@ -143,14 +146,5 @@ public class TransactionServiceImpl implements TransactionService {
         return GetCommentOnNewestTransactionResponse.builder()
                 .comment(comment)
                 .build();
-    }
-
-    @Override
-    public List<CategorySummaryResult> getCategorySummary(GetCategorySummaryRequest request) {
-        return transactionRepository.findCategorySummaryByUserUuid(
-                request.getUserUuid(),
-                request.getStartDate(),
-                request.getEndDate()
-        );
     }
 }

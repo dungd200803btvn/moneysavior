@@ -1,4 +1,4 @@
-package soict.hedspi.itss2.gyatto.moneysavior.dto.transaction;
+package soict.hedspi.itss2.gyatto.moneysavior.dto.report;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
