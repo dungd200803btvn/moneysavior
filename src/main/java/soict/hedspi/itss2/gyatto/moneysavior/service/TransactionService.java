@@ -8,5 +8,6 @@ public interface TransactionService {
     RecordTransactionResponse recordTransaction(RecordTransactionRequest request);
     RecordTransactionResponse recordTransactionAuto(RecordTransactionAutoRequest request);
     GetCommentOnNewestTransactionResponse getCommentOnNewestTransaction(String userUuid);
-    List<CategorySummaryResult> getCategorySummary(GetCategorySummaryRequest request);
+    TransactionResponse updateTransaction(String uuid, UpdateTransactionRequest request);
+    List<TransactionResponse> getTransactionHistory(GetTransactionHistoryRequest request);
 }

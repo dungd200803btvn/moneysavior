@@ -1,7 +1,7 @@
 package soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot;
 
 import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.CategorySummaryResult;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.report.CategorySummaryResult;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 
 import java.math.BigDecimal;

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RecordTransactionResponse {
-    private RecordTransactionRequest transaction;
+    private TransactionResponse transaction;
     private String comment;
 }

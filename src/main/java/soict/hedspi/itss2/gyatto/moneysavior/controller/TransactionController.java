@@ -5,10 +5,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,21 +41,35 @@ public class TransactionController {
         return ResponseEntity.ok(transactionService.getCommentOnNewestTransaction(userUuid));
     }
 
-    @GetMapping("/transactions/reports/category-summary")
+    @PutMapping("/transactions/{uuid}")
+    @Operation(summary = "Cập nhật giao dịch")
+    public ResponseEntity<TransactionResponse> updateTransaction(
+            @PathVariable String uuid,
+            @RequestBody @Valid UpdateTransactionRequest request
+    ) {
+        return ResponseEntity.ok(transactionService.updateTransaction(uuid, request));
+    }
+
+    @GetMapping("/transactions")
     @Operation(
-            summary = "Thống kê chi tiêu theo từng danh mục",
-            description = "Trả về list thông số mỗi danh mục gồm categoryName (tên danh mục), totalAmount (tổng chi của danh mục đó) và percentage (phần trăm của danh mục đó so với tổng chi)."
+            summary = "Lấy lịch sử giao dịch",
+            description = "type là 'EXPENSE' hoặc 'INCOME'. Nếu không truyền type thì lấy tất cả giao dịch. \n" +
+                    "category là tên danh mục chi tiêu, ví dụ: \"Nhà ở\", \"Đi lại\", \"Ăn uống\", \"Mua sắm\", \"Giải trí\", \"Giáo dục\", \"Sức khỏe\", \"Khác\". Nếu không truyền category thì mặc định là tất cả.\n"
     )
-    public ResponseEntity<List<CategorySummaryResult>> getCategorySummary(
+    public ResponseEntity<List<TransactionResponse>> getTransactionHistory(
             @RequestParam String userUuid,
+            @RequestParam(required = false) TransactionType type,
+            @RequestParam(required = false) String category,
             @RequestParam int year,
             @RequestParam int month
     ) {
-        var request = GetCategorySummaryRequest.builder()
+        var request = GetTransactionHistoryRequest.builder()
                 .userUuid(userUuid)
+                .type(type)
+                .category(category)
                 .year(year)
                 .month(month)
                 .build();
-        return ResponseEntity.ok(transactionService.getCategorySummary(request));
+        return ResponseEntity.ok(transactionService.getTransactionHistory(request));
     }
 }
