@@ -44,17 +44,17 @@ public class TransactionController {
     @GetMapping("/transactions/reports/category-summary")
     @Operation(
             summary = "Thống kê chi tiêu theo từng danh mục",
-            description = "Trả về list thông số mỗi danh mục gồm categoryName (tên danh mục), totalAmount (tổng chi của danh mục đó) và percentage (phần trăm của danh mục đó so với tổng chi)."
+            description = "startDate và endDate định dạng yyyy-MM-dd (ví dụ: 2025-05-01). Trả về list thông số mỗi danh mục gồm categoryName (tên danh mục), totalAmount (tổng chi của danh mục đó) và percentage (phần trăm của danh mục đó so với tổng chi)."
     )
     public ResponseEntity<List<CategorySummaryResult>> getCategorySummary(
             @RequestParam String userUuid,
-            @RequestParam int year,
-            @RequestParam int month
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
     ) {
         var request = GetCategorySummaryRequest.builder()
                 .userUuid(userUuid)
-                .year(year)
-                .month(month)
+                .startDate(startDate)
+                .endDate(endDate)
                 .build();
         return ResponseEntity.ok(transactionService.getCategorySummary(request));
     }

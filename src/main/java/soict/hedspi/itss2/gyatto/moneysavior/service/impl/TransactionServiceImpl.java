@@ -133,10 +133,10 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         var currentDate = LocalDate.now();
-        var year = currentDate.getYear();
-        var month = currentDate.getMonthValue();
-        var totalIncome = transactionRepository.findTotalIncomeByUserUuid(userUuid, year, month);
-        var categorySummaryResults = transactionRepository.findCategorySummaryByUserUuid(userUuid, year, month);
+        var startDate = currentDate.withDayOfMonth(1);
+        var endDate = currentDate.withDayOfMonth(currentDate.lengthOfMonth());
+        var totalIncome = transactionRepository.findTotalIncomeByUserUuid(userUuid, startDate, endDate);
+        var categorySummaryResults = transactionRepository.findCategorySummaryByUserUuid(userUuid, startDate, endDate);
         var prompt = new CommentOnTransactionPrompt(latestTransaction, totalIncome, categorySummaryResults);
         var comment = chatbotService.getResponse(prompt);
 
@@ -149,8 +149,8 @@ public class TransactionServiceImpl implements TransactionService {
     public List<CategorySummaryResult> getCategorySummary(GetCategorySummaryRequest request) {
         return transactionRepository.findCategorySummaryByUserUuid(
                 request.getUserUuid(),
-                request.getYear(),
-                request.getMonth()
+                request.getStartDate(),
+                request.getEndDate()
         );
     }
 }

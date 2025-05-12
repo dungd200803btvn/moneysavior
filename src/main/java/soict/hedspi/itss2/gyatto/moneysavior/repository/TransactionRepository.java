@@ -17,18 +17,18 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("""
             SELECT t.category.name AS categoryName,
                    SUM(t.amount) AS totalAmount,
-                   SUM(t.amount) / (SELECT SUM(t2.amount) FROM Transaction t2 WHERE t2.userUuid = :userUuid AND t2.type = 'EXPENSE' AND EXTRACT(YEAR FROM t2.timestamp) = :year AND EXTRACT(MONTH FROM t2.timestamp) = :month) * 100 AS percentage
+                   SUM(t.amount) / (SELECT SUM(t2.amount) FROM Transaction t2 WHERE t2.userUuid = :userUuid AND t2.type = 'EXPENSE' AND CAST(t2.timestamp AS DATE) BETWEEN :startDate AND :endDate) * 100 AS percentage
             FROM Transaction t
-            WHERE t.userUuid = :userUuid AND t.type = 'EXPENSE' AND EXTRACT(YEAR FROM t.timestamp) = :year AND EXTRACT(MONTH FROM t.timestamp) = :month
+            WHERE t.userUuid = :userUuid AND t.type = 'EXPENSE' AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate
             GROUP BY t.category.name
             HAVING sum(t.amount) > 0
             """)
-    List<CategorySummaryResult> findCategorySummaryByUserUuid(String userUuid, int year, int month);
+    List<CategorySummaryResult> findCategorySummaryByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
 
     @Query("""
             SELECT SUM(t.amount)
             FROM Transaction t
-            WHERE t.userUuid = :userUuid AND t.type = 'INCOME' AND EXTRACT(YEAR FROM t.timestamp) = :year AND EXTRACT(MONTH FROM t.timestamp) = :month
+            WHERE t.userUuid = :userUuid AND t.type = 'INCOME' AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate
             """)
-    BigDecimal findTotalIncomeByUserUuid(String userUuid, int year, int month);
+    BigDecimal findTotalIncomeByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
 }
