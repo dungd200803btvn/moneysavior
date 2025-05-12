@@ -27,6 +27,7 @@ public class UserAccountServiceImpl implements UserAccountService {
         }
         return FakeLoginResponse.builder()
                 .userUuid(user.getUuid())
+                .fullName(user.getFullName())
                 .build();
     }
 }

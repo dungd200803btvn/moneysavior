@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class FakeLoginResponse {
     private String userUuid;
+    private String fullName;
 }
