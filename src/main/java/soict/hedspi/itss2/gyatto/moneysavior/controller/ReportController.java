@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.report.CategorySummaryResult;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.report.GetCategorySummaryRequest;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.report.GetOverviewRequest;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.report.GetOverviewResponse;
 import soict.hedspi.itss2.gyatto.moneysavior.service.ReportService;
 
 import java.time.LocalDate;
@@ -19,6 +21,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportController {
     private final ReportService reportService;
+
+    @GetMapping("/reports/overview")
+    @Operation()
+    public ResponseEntity<GetOverviewResponse> getOverview(
+            @RequestParam String userUuid,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        var request = GetOverviewRequest.builder()
+                .userUuid(userUuid)
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+        return ResponseEntity.ok(reportService.getOverview(request));
+    }
 
     @GetMapping("/reports/category-summary")
     @Operation(

@@ -7,5 +7,5 @@ import lombok.experimental.SuperBuilder;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
-public class GetCategorySummaryRequest extends QueryByUserAndTimeRangeRequest {
+public class GetOverviewRequest extends QueryByUserAndTimeRangeRequest {
 }

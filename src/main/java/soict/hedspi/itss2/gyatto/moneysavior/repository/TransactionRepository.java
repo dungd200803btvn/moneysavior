@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.report.CategorySummaryResult;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.report.OverviewResult;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 
 import java.math.BigDecimal;
@@ -31,4 +32,19 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             WHERE t.userUuid = :userUuid AND t.type = 'INCOME' AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate
             """)
     BigDecimal findTotalIncomeByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
+
+    @Query("""
+            SELECT
+                IFNULL((SELECT SUM(t.amount) FROM Transaction t
+                WHERE t.userUuid = :userUuid
+                    AND t.type = 'INCOME'
+                    AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate), 0)
+                AS totalIncomes,
+                IFNULL((SELECT SUM(t.amount) FROM Transaction t
+                WHERE t.userUuid = :userUuid
+                    AND t.type = 'EXPENSE'
+                    AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate), 0)
+                AS totalExpenses
+            """)
+    OverviewResult findOverviewByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
 }
