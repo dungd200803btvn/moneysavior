@@ -5,10 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.GetCommentOnNewestTransactionResponse;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionAutoRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionResponse;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
 
 @RestController
@@ -39,5 +36,14 @@ public class TransactionController {
     @Operation(summary = "Đưa ra nhận xét cho giao dịch gần nhất (đã tích hợp trong api ghi giao dịch tự động)")
     public ResponseEntity<GetCommentOnNewestTransactionResponse> getCommentOnNewestTransaction(@RequestParam String userUuid) {
         return ResponseEntity.ok(transactionService.getCommentOnNewestTransaction(userUuid));
+    }
+
+    @PutMapping("/transactions/{uuid}")
+    @Operation(summary = "Cập nhật giao dịch")
+    public ResponseEntity<TransactionResponse> updateTransaction(
+            @PathVariable String uuid,
+            @RequestBody @Valid UpdateTransactionRequest request
+    ) {
+        return ResponseEntity.ok(transactionService.updateTransaction(uuid, request));
     }
 }

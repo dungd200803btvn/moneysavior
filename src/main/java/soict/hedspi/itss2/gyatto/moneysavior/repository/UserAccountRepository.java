@@ -6,5 +6,5 @@ import soict.hedspi.itss2.gyatto.moneysavior.entity.UserAccount;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
-    UserAccount findByEmail(String email);
+    UserAccount findFirstByEmail(String email);
 }

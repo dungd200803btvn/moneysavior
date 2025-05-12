@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -38,7 +39,10 @@ public class Transaction {
     private String currency = "VND";
 
     @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDate date = LocalDate.now();
+
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "category_id")

@@ -10,17 +10,20 @@ import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    Transaction findFirstByUserUuidOrderByTimestampDesc(String userUuid);
+    Optional<Transaction> findByUuid(String uuid);
+
+    Transaction findFirstByUserUuidOrderByCreatedAtDesc(String userUuid);
 
     @Query("""
             SELECT t.category.name AS categoryName,
                    SUM(t.amount) AS totalAmount,
-                   SUM(t.amount) / (SELECT SUM(t2.amount) FROM Transaction t2 WHERE t2.userUuid = :userUuid AND t2.type = 'EXPENSE' AND CAST(t2.timestamp AS DATE) BETWEEN :startDate AND :endDate) * 100 AS percentage
+                   SUM(t.amount) / (SELECT SUM(t2.amount) FROM Transaction t2 WHERE t2.userUuid = :userUuid AND t2.type = 'EXPENSE' AND t2.date BETWEEN :startDate AND :endDate) * 100 AS percentage
             FROM Transaction t
-            WHERE t.userUuid = :userUuid AND t.type = 'EXPENSE' AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate
+            WHERE t.userUuid = :userUuid AND t.type = 'EXPENSE' AND t.date BETWEEN :startDate AND :endDate
             GROUP BY t.category.name
             HAVING sum(t.amount) > 0
             """)
@@ -29,7 +32,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     @Query("""
             SELECT SUM(t.amount)
             FROM Transaction t
-            WHERE t.userUuid = :userUuid AND t.type = 'INCOME' AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate
+            WHERE t.userUuid = :userUuid AND t.type = 'INCOME' AND t.date BETWEEN :startDate AND :endDate
             """)
     BigDecimal findTotalIncomeByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
 
@@ -38,12 +41,12 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 IFNULL((SELECT SUM(t.amount) FROM Transaction t
                 WHERE t.userUuid = :userUuid
                     AND t.type = 'INCOME'
-                    AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate), 0)
+                    AND t.date BETWEEN :startDate AND :endDate), 0)
                 AS totalIncomes,
                 IFNULL((SELECT SUM(t.amount) FROM Transaction t
                 WHERE t.userUuid = :userUuid
                     AND t.type = 'EXPENSE'
-                    AND CAST(t.timestamp AS DATE) BETWEEN :startDate AND :endDate), 0)
+                    AND t.date BETWEEN :startDate AND :endDate), 0)
                 AS totalExpenses
             """)
     OverviewResult findOverviewByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);

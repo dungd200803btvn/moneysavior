@@ -11,6 +11,8 @@ import soict.hedspi.itss2.gyatto.moneysavior.entity.ChatHistory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ExpenseCategory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
 import soict.hedspi.itss2.gyatto.moneysavior.exception.ApiException;
+import soict.hedspi.itss2.gyatto.moneysavior.exception.ApiExceptionProvider;
+import soict.hedspi.itss2.gyatto.moneysavior.mapper.TransactionMapper;
 import soict.hedspi.itss2.gyatto.moneysavior.repository.ChatHistoryRepository;
 import soict.hedspi.itss2.gyatto.moneysavior.repository.ExpenseCategoryRepository;
 import soict.hedspi.itss2.gyatto.moneysavior.repository.TransactionRepository;
@@ -28,6 +30,8 @@ public class TransactionServiceImpl implements TransactionService {
     private final ExpenseCategoryRepository expenseCategoryRepository;
     private final TransactionRepository transactionRepository;
     private final ChatHistoryRepository chatHistoryRepository;
+    private final ApiExceptionProvider apiExceptionProvider;
+    private final TransactionMapper transactionMapper;
 
     @Override
     public RecordTransactionResponse recordTransaction(RecordTransactionRequest request) {
@@ -40,13 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .build();
         }
 
-        var transactionResponse = TransactionResponse.builder()
-                .type(transaction.getType())
-                .category(transaction.getCategory() != null ? transaction.getCategory().getName() : null)
-                .description(transaction.getDescription())
-                .amount(transaction.getAmount())
-                .date(transaction.getTimestamp().toLocalDate())
-                .build();
+        var transactionResponse = transactionMapper.toTransactionResponse(transaction);
 
         return RecordTransactionResponse.builder()
                 .transaction(transactionResponse)
@@ -88,13 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
                     .sender(ChatHistory.Sender.BOT)
                     .build();
         } else {
-            transactionResponse = TransactionResponse.builder()
-                    .type(result.getType())
-                    .category(result.getCategory())
-                    .description(result.getDescription())
-                    .amount(result.getAmount())
-                    .date(transaction.getTimestamp().toLocalDate())
-                    .build();
+            transactionResponse = transactionMapper.toTransactionResponse(transaction);
             comment = getCommentOnNewestTransaction(request.getUserUuid()).getComment();
             botChat = ChatHistory.builder()
                     .userUuid(request.getUserUuid())
@@ -119,7 +111,7 @@ public class TransactionServiceImpl implements TransactionService {
                 var category = expenseCategoryRepository.findAll().stream()
                         .filter(c -> c.getName().equals(request.getCategory()))
                         .findFirst()
-                        .orElseThrow(() -> new ApiException("Category not found", HttpStatus.NOT_FOUND));
+                        .orElseThrow(() -> apiExceptionProvider.createCategoryNotFoundException(request.getCategory()));
                 var transaction = Transaction.builder()
                         .userUuid(request.getUserUuid())
                         .type(request.getType())
@@ -147,7 +139,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public GetCommentOnNewestTransactionResponse getCommentOnNewestTransaction(String userUuid) {
-        var latestTransaction = transactionRepository.findFirstByUserUuidOrderByTimestampDesc(userUuid);
+        var latestTransaction = transactionRepository.findFirstByUserUuidOrderByCreatedAtDesc(userUuid);
         if (latestTransaction == null) {
             return GetCommentOnNewestTransactionResponse.builder()
                     .comment("Bạn chưa có giao dịch nào!")
@@ -165,5 +157,23 @@ public class TransactionServiceImpl implements TransactionService {
         return GetCommentOnNewestTransactionResponse.builder()
                 .comment(comment)
                 .build();
+    }
+
+    @Override
+    public TransactionResponse updateTransaction(String uuid, UpdateTransactionRequest request) {
+        var transaction = transactionRepository.findByUuid(uuid)
+                .orElseThrow(() -> apiExceptionProvider.createTransactionNotFoundException(uuid));
+
+        transaction.setType(request.getType());
+        transaction.setDescription(request.getDescription());
+        transaction.setAmount(request.getAmount());
+        transaction.setDate(request.getDate());
+        var category = expenseCategoryRepository.findAll().stream()
+                .filter(c -> c.getName().equals(request.getCategory()))
+                .findFirst()
+                .orElseThrow(() -> apiExceptionProvider.createCategoryNotFoundException(request.getCategory()));
+        transaction.setCategory(category);
+        transactionRepository.save(transaction);
+        return transactionMapper.toTransactionResponse(transaction);
     }
 }
