@@ -6,10 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CategorizeTransactionPrompt;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.chatbot.CommentOnTransactionPrompt;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.GetCommentOnNewestTransactionResponse;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionAutoRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionRequest;
-import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.RecordTransactionResponse;
+import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ChatHistory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.ExpenseCategory;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
@@ -43,8 +40,16 @@ public class TransactionServiceImpl implements TransactionService {
                     .build();
         }
 
+        var transactionResponse = TransactionResponse.builder()
+                .type(transaction.getType())
+                .category(transaction.getCategory() != null ? transaction.getCategory().getName() : null)
+                .description(transaction.getDescription())
+                .amount(transaction.getAmount())
+                .date(transaction.getTimestamp().toLocalDate())
+                .build();
+
         return RecordTransactionResponse.builder()
-                .transaction(request)
+                .transaction(transactionResponse)
                 .comment("Đã ghi nhận giao dịch thành công!")
                 .build();
     }
@@ -62,9 +67,16 @@ public class TransactionServiceImpl implements TransactionService {
         var prompt = new CategorizeTransactionPrompt(request.getMessage(), categoryNames);
         var result = chatbotService.categorizeTransaction(prompt);
 
-        result.setUserUuid(request.getUserUuid());
-        var transaction = saveTransaction(result);
+        var recordTransactionRequest = RecordTransactionRequest.builder()
+                .userUuid(request.getUserUuid())
+                .type(result.getType())
+                .category(result.getCategory())
+                .description(result.getDescription())
+                .amount(result.getAmount())
+                .build();
+        var transaction = saveTransaction(recordTransactionRequest);
 
+        TransactionResponse transactionResponse = null;
         String comment = null;
         ChatHistory botChat = null;
 
@@ -76,6 +88,13 @@ public class TransactionServiceImpl implements TransactionService {
                     .sender(ChatHistory.Sender.BOT)
                     .build();
         } else {
+            transactionResponse = TransactionResponse.builder()
+                    .type(result.getType())
+                    .category(result.getCategory())
+                    .description(result.getDescription())
+                    .amount(result.getAmount())
+                    .date(transaction.getTimestamp().toLocalDate())
+                    .build();
             comment = getCommentOnNewestTransaction(request.getUserUuid()).getComment();
             botChat = ChatHistory.builder()
                     .userUuid(request.getUserUuid())
@@ -89,7 +108,7 @@ public class TransactionServiceImpl implements TransactionService {
         chatHistoryRepository.saveAll(List.of(userChat, botChat));
 
         return RecordTransactionResponse.builder()
-                .transaction(result)
+                .transaction(transactionResponse)
                 .comment(comment)
                 .build();
     }
