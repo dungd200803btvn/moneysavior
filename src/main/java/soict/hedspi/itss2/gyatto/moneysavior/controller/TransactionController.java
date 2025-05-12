@@ -5,8 +5,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.transaction.*;
 import soict.hedspi.itss2.gyatto.moneysavior.service.TransactionService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -45,5 +48,28 @@ public class TransactionController {
             @RequestBody @Valid UpdateTransactionRequest request
     ) {
         return ResponseEntity.ok(transactionService.updateTransaction(uuid, request));
+    }
+
+    @GetMapping("/transactions")
+    @Operation(
+            summary = "Lấy lịch sử giao dịch",
+            description = "type là 'EXPENSE' hoặc 'INCOME'. Nếu không truyền type thì lấy tất cả giao dịch. \n" +
+                    "category là tên danh mục chi tiêu, ví dụ: \"Nhà ở\", \"Đi lại\", \"Ăn uống\", \"Mua sắm\", \"Giải trí\", \"Giáo dục\", \"Sức khỏe\", \"Khác\". Nếu không truyền category thì mặc định là tất cả.\n"
+    )
+    public ResponseEntity<List<TransactionResponse>> getTransactionHistory(
+            @RequestParam String userUuid,
+            @RequestParam(required = false) TransactionType type,
+            @RequestParam(required = false) String category,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        var request = GetTransactionHistoryRequest.builder()
+                .userUuid(userUuid)
+                .type(type)
+                .category(category)
+                .year(year)
+                .month(month)
+                .build();
+        return ResponseEntity.ok(transactionService.getTransactionHistory(request));
     }
 }

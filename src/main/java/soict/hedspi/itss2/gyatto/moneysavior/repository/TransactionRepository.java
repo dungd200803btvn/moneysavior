@@ -3,6 +3,7 @@ package soict.hedspi.itss2.gyatto.moneysavior.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import soict.hedspi.itss2.gyatto.moneysavior.common.enums.TransactionType;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.report.CategorySummaryResult;
 import soict.hedspi.itss2.gyatto.moneysavior.dto.report.OverviewResult;
 import soict.hedspi.itss2.gyatto.moneysavior.entity.Transaction;
@@ -50,4 +51,16 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
                 AS totalExpenses
             """)
     OverviewResult findOverviewByUserUuid(String userUuid, LocalDate startDate, LocalDate endDate);
+
+    @Query("""
+            SELECT t
+            FROM Transaction t JOIN t.category c
+            WHERE t.userUuid = :userUuid
+                AND (:type IS NULL OR t.type = :type)
+                AND (:categoryName IS NULL OR c.name = :categoryName)
+                AND EXTRACT(YEAR FROM t.date) = :year
+                AND EXTRACT(MONTH FROM t.date) = :month
+            ORDER BY t.date DESC, t.createdAt DESC
+            """)
+    List<Transaction> findTransactionHistoryByUser(String userUuid, TransactionType type, String categoryName, int year, int month);
 }

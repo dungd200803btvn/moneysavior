@@ -176,4 +176,18 @@ public class TransactionServiceImpl implements TransactionService {
         transactionRepository.save(transaction);
         return transactionMapper.toTransactionResponse(transaction);
     }
+
+    @Override
+    public List<TransactionResponse> getTransactionHistory(GetTransactionHistoryRequest request) {
+        return transactionRepository.findTransactionHistoryByUser(
+                        request.getUserUuid(),
+                        request.getType(),
+                        request.getCategory(),
+                        request.getYear(),
+                        request.getMonth()
+                )
+                .stream()
+                .map(transactionMapper::toTransactionResponse)
+                .toList();
+    }
 }
